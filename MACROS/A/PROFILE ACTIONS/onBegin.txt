@@ -13,6 +13,42 @@ leds_color = [
     (120,  0, 255)    # violeta místico
 ]
 
+
+def rgb_para_hsv(r, g, b):
+
+    r /= 255.0
+    g /= 255.0
+    b /= 255.0
+
+    cmax = max(r, g, b)
+    cmin = min(r, g, b)
+    diff = cmax - cmin
+
+    if diff < 0.00001:
+        h = 0.0
+
+    elif cmax == r:
+        h = (60.0 * ((g - b) / diff)) % 360.0
+
+    elif cmax == g:
+        h = 60.0 * ((b - r) / diff + 2.0)
+
+    else:
+        h = 60.0 * ((r - g) / diff + 4.0)
+
+    s = 0.0 if cmax <= 0.00001 else diff / cmax
+    v = cmax
+
+    return h, s, v
+
 for idx in range(0, 12):
     led[idx] = leds_color[idx]
+
+globalVars["channel"] = True
+globalVars["led_hsv"] = []
+
+for idx in range(12):
+    r, g, b = led[idx]
+    h, s, v = rgb_para_hsv(r, g, b)
+    globalVars["led_hsv"].append([h, s, v])
    

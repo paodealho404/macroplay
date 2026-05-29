@@ -1,2 +1,2 @@
 led[contextLED] = (0,255, 0)
-playTone(320)
+playTone(293)

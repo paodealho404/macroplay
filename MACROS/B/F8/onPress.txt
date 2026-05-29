@@ -1,7 +1,2 @@
 led[contextLED] = (0,255, 0)
-
-i = 0
-while contextSwitch.value:
-	i = i+1
-	playTone(i)
-	time.sleep(0.001)
+glovalVars["octave"] += 1

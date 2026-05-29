@@ -214,6 +214,7 @@ globalVars = {
     "buttonPressed": 0,
     "ledActive": True,
     "ledState": [],
+    "octave": 0,
 }
 
 

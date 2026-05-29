@@ -4,3 +4,5 @@ System Volume Information/
 .metadata_never_index
 .Trashes
 .Trash-1000
+
+.venv/

@@ -75,7 +75,7 @@ def hsv_para_rgb(h, s, v):
 # ESTADO HSV PERSISTENTE
 # ==========================================
 
-if "led_hsv" not in globalVars:
+if "led_hsv" not in globalVars or len(globalVars["led_hsv"]) != 12:
 
     globalVars["led_hsv"] = []
 
@@ -89,7 +89,6 @@ if "led_hsv" not in globalVars:
 
 
 passo_brilho = 0.05
-passo_matiz = 4
 freq = 15
 
 playTone(freq)
@@ -100,13 +99,7 @@ for idx in range(12):
 
     h, s, v = globalVars["led_hsv"][idx]
 
-    # =====================================
-    # BRILHO
-    # =====================================
-    if globalVars["channel"] == 1:
-        v = min(1.0, v + passo_brilho)
-    else:
-        h = (h + passo_matiz) % 360.0
+    v = min(1.0, v + passo_brilho)
 
     globalVars["led_hsv"][idx] = [h, s, v]
 
