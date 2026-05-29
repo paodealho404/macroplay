@@ -1,0 +1,6 @@
+led[contextLED] = (0,10, 10)
+keyboard.send(
+	Keycode.CONTROL,
+	Keycode.SHIFT,
+	Keycode.H,
+)

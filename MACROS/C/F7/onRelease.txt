@@ -1,0 +1,2 @@
+led[contextLED] = (0,0,10)
+keyboard.release(Keycode.S)

@@ -1,0 +1,2501 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MACROPLAY</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --surface2: #1a1a1a;
+        --border: #2a2a2a;
+        --accent: #ffff55;
+        --text: #ffffff;
+        --muted: #555;
+        --danger: #ff4747;
+        --success: #47ff8a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Space Mono", monospace;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(232, 255, 71, 0.03) 3px, transparent 1px),
+          linear-gradient(90deg, rgba(232, 255, 71, 0.03) 3px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 24px;
+      }
+
+      /* ── Header ─────────────────────────────────────────── */
+      header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 48px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .logo {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 2.4rem;
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+
+      .logo span {
+        color: var(--accent);
+      }
+
+      .logo .logo-editor {
+        color: var(--text);
+        font-family: "Space Mono", monospace;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-left: 8px;
+        text-transform: uppercase;
+        vertical-align: baseline;
+      }
+
+      .header-meta {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .documentation-link {
+        font-size: 0.65rem;
+        color: var(--muted);
+        text-decoration: none;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: color 0.15s;
+        white-space: nowrap;
+      }
+
+      .documentation-link:hover {
+        color: var(--accent);
+      }
+
+      /* ── Load section ────────────────────────────────────── */
+      .load-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 60px 24px;
+        border: 1px dashed var(--border);
+        border-radius: 4px;
+        margin-bottom: 40px;
+        transition: border-color 0.2s;
+        cursor: pointer;
+      }
+
+      .load-section:hover {
+        border-color: var(--accent);
+      }
+      .load-section.hidden {
+        display: none;
+      }
+
+      .load-icon {
+        font-size: 2.5rem;
+        opacity: 0.4;
+      }
+
+      .load-title {
+        font-family: "Syne", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .load-sub {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.8;
+      }
+
+      /* ── Buttons ─────────────────────────────────────────── */
+      .btn {
+        background: var(--accent);
+        color: #000;
+        border: none;
+        padding: 12px 28px;
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border-radius: 2px;
+      }
+
+      .btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        vertical-align: -2px;
+      }
+
+      .btn-icon-label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      .btn:hover {
+        background: #fff;
+        transform: translateY(-1px);
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn.secondary {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      .btn.secondary:hover {
+        color: var(--text);
+        border-color: var(--muted);
+        background: var(--surface);
+      }
+
+      .btn.danger {
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid var(--danger);
+      }
+
+      .btn.danger:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+
+      /* ── Editor ──────────────────────────────────────────── */
+      .editor {
+        display: none;
+      }
+      .editor.visible {
+        display: block;
+      }
+
+      /* ── Profile tabs ────────────────────────────────────── */
+      .profile-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .tab {
+        padding: 24px 1px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        border-radius: 2px;
+      }
+
+      .tab:hover {
+        color: var(--text);
+        border-color: var(--muted);
+      }
+      .tab.active {
+        background: var(--accent);
+        color: #000;
+        border-color: var(--accent);
+      }
+
+      /* ── Grids ───────────────────────────────────────────── */
+      .macro-grid,
+      .lifecycle-grid,
+      .encoder-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      /* ── Macro cards ─────────────────────────────────────── */
+      .code-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        transition: border-color 0.2s;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .code-card:hover {
+        border-color: var(--muted);
+      }
+      .code-card:focus-within {
+        border-color: var(--accent);
+      }
+
+      .code-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 12px;
+        background: var(--surface2);
+        border-bottom: 1px solid var(--border);
+        min-width: 0;
+      }
+
+      .code-card-label {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 2px;
+        color: var(--accent);
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .code-card-actions {
+        display: inline-flex;
+        align-items: center;
+        flex: 0 0 auto;
+        gap: 6px;
+        white-space: nowrap;
+      }
+
+      .code-action-btn {
+        width: 26px;
+        height: 26px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .code-action-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(255, 255, 85, 0.06);
+      }
+
+      .code-action-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      .code-action-btn:disabled:hover {
+        color: var(--muted);
+        border-color: var(--border);
+        background: transparent;
+      }
+
+      .code-action-btn.danger:hover {
+        color: var(--danger);
+        border-color: var(--danger);
+        background: rgba(255, 71, 71, 0.08);
+      }
+
+      .code-action-btn.danger:disabled:hover {
+        color: var(--muted);
+        border-color: var(--border);
+        background: transparent;
+      }
+
+      .code-action-btn.locked {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(255, 255, 85, 0.08);
+      }
+
+      .code-action-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+      }
+
+      .tab-dirty-dot {
+        width: 6px;
+        height: 6px;
+        display: block;
+        justify-self: start;
+        margin-left: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 6px rgba(255, 255, 85, 0.8);
+        visibility: hidden;
+      }
+
+      .sub-tab.dirty .tab-dirty-dot {
+        visibility: visible;
+      }
+
+      .sub-tab-label {
+        grid-column: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* ── Sub-tabs ────────────────────────────────────────── */
+      .sub-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sub-tab {
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr);
+        align-items: center;
+        min-width: 0;
+        padding: 5px 8px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: transparent;
+        border: none;
+        border-right: 1px solid var(--border);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+      }
+
+      .sub-tab:last-child {
+        border-right: none;
+      }
+      .sub-tab:hover {
+        color: var(--text);
+        background: var(--surface2);
+      }
+      .sub-tab.active {
+        background: var(--surface2);
+        color: var(--accent);
+        border-bottom: 2px solid var(--accent);
+        margin-bottom: -1px;
+      }
+
+      /* ── Textareas ───────────────────────────────────────── */
+      .code-textarea {
+        width: 100%;
+        min-height: 200px;
+        background: transparent;
+        border: none;
+        outline: none;
+        resize: none;
+        overflow: auto;
+        tab-size: 4;
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--text);
+        line-height: 1.7;
+        padding: 10px 12px;
+      }
+
+      .code-textarea::placeholder {
+        color: var(--muted);
+      }
+
+      .CodeMirror.code-editor {
+        width: 100%;
+        height: calc(17em + 20px);
+        overflow: hidden;
+        background: transparent;
+        color: var(--text);
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        line-height: 1.7;
+      }
+
+      .CodeMirror.code-editor pre.CodeMirror-line,
+      .CodeMirror.code-editor pre.CodeMirror-line-like {
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+      }
+
+      .CodeMirror.code-editor .CodeMirror-scroll {
+        height: calc(17em + 20px);
+      }
+
+      .CodeMirror.code-editor .CodeMirror-gutters {
+        background: rgba(255, 255, 255, 0.02);
+        border-right: 1px solid var(--border);
+      }
+
+      .CodeMirror.code-editor .CodeMirror-linenumber {
+        color: var(--muted);
+        font-size: 0.62rem;
+      }
+
+      .CodeMirror.code-editor .CodeMirror-cursor {
+        border-left-color: var(--accent);
+      }
+
+      .CodeMirror.code-editor.CodeMirror-focused {
+        outline: none;
+      }
+
+      .CodeMirror.code-editor .cm-tab {
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 85, 0.12) 1px,
+            transparent 1px
+          )
+          0 0 / 4ch 100%;
+      }
+
+      .CodeMirror-placeholder {
+        color: var(--muted) !important;
+      }
+
+      .cm-macroplay-keyword {
+        color: #ffb454;
+        font-weight: 700;
+      }
+
+      .cm-macroplay-object {
+        color: #7bdff2;
+        font-weight: 700;
+      }
+
+      .cm-macroplay-function {
+        color: #c792ea;
+        font-weight: 700;
+      }
+
+      /* ── Section title ───────────────────────────────────── */
+      .section-title {
+        font-family: "Syne", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--muted);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title .badge {
+        font-size: 0.55rem;
+        padding: 2px 8px;
+        border-radius: 2px;
+        letter-spacing: 1px;
+        background: rgba(232, 255, 71, 0.1);
+        color: var(--accent);
+        border: 1px solid var(--border);
+      }
+
+      /* ── Special cards (Profile / Encoder) ───────────────── */
+      /* ── Actions bar ─────────────────────────────────────── */
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0;
+        border-top: 1px solid var(--border);
+        gap: 12px;
+      }
+
+      .actions-left,
+      .actions-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .unsaved-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        display: none;
+      }
+
+      /* ── Toast ───────────────────────────────────────────── */
+      .toast {
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        padding: 14px 24px;
+        font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
+        border-radius: 2px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.25s;
+        z-index: 1000;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .toast.success {
+        background: var(--success);
+        color: #000;
+      }
+      .toast.error {
+        background: var(--danger);
+        color: #fff;
+      }
+
+      /* ── Unsaved indicator ───────────────────────────────── */
+      .unsaved {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: none;
+      }
+      .unsaved.visible {
+        display: block;
+      }
+
+      /* ── Responsive ──────────────────────────────────────── */
+      @media (max-width: 900px) {
+        header {
+          align-items: flex-start;
+        }
+
+        .profile-tabs {
+          gap: 12px;
+        }
+
+        .tab {
+          padding: 18px 8px;
+          letter-spacing: 2px;
+        }
+
+        .actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .actions-left,
+        .actions-right {
+          width: 100%;
+        }
+
+        .actions-right {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .actions-right .btn {
+          width: 100%;
+          padding-inline: 12px;
+        }
+
+        .code-card-label {
+          font-size: 0.78rem;
+          letter-spacing: 1.4px;
+        }
+
+        .sub-tab {
+          font-size: 0.58rem;
+          letter-spacing: 0.7px;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .container {
+          padding: 24px 14px;
+        }
+
+        header {
+          flex-direction: column;
+          margin-bottom: 28px;
+          padding-bottom: 18px;
+        }
+
+        .header-meta {
+          width: 100%;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .documentation-link {
+          letter-spacing: 1px;
+        }
+
+        .load-section {
+          padding: 42px 16px;
+        }
+
+        .macro-grid,
+        .lifecycle-grid,
+        .encoder-grid {
+          gap: 16px;
+        }
+
+        .logo {
+          font-size: 1.65rem;
+        }
+
+        .logo-editor {
+          font-size: 0.64rem;
+          letter-spacing: 1.4px;
+          margin-left: 5px;
+        }
+
+        .profile-tabs {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .tab {
+          min-height: 54px;
+          padding: 14px 8px;
+          font-size: 0.72rem;
+          letter-spacing: 1.5px;
+        }
+
+        .actions-right {
+          grid-template-columns: 1fr;
+        }
+
+        .actions-right .btn {
+          min-height: 44px;
+        }
+
+        .actions-left {
+          min-height: 24px;
+        }
+
+        .code-card-header {
+          gap: 8px;
+          padding: 8px 10px;
+        }
+
+        .code-card-label {
+          font-size: 0.72rem;
+          letter-spacing: 1px;
+        }
+
+        .code-card-actions {
+          gap: 4px;
+        }
+
+        .code-action-btn {
+          width: 24px;
+          height: 24px;
+        }
+
+        .code-action-btn svg {
+          width: 13px;
+          height: 13px;
+        }
+
+        .sub-tab {
+          padding: 5px 6px;
+          font-size: 0.54rem;
+          letter-spacing: 0.4px;
+        }
+
+        .toast {
+          left: 14px;
+          right: 14px;
+          bottom: 16px;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .header-meta {
+          flex-direction: column;
+        }
+
+        .profile-tabs {
+          grid-template-columns: 1fr;
+        }
+
+        .code-card-header {
+          gap: 6px;
+          padding-inline: 8px;
+        }
+
+        .code-card-label {
+          font-size: 0.66rem;
+          letter-spacing: 0.6px;
+        }
+
+        .code-card-actions {
+          gap: 3px;
+        }
+
+        .code-action-btn {
+          width: 22px;
+          height: 22px;
+        }
+
+        .code-action-btn svg {
+          width: 12px;
+          height: 12px;
+        }
+
+        .sub-tab {
+          font-size: 0.5rem;
+          letter-spacing: 0.2px;
+        }
+      }
+
+      @media (max-aspect-ratio: 6/5) {
+        .macro-grid,
+        .lifecycle-grid,
+        .encoder-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          MACRO<span>PLAY</span><span class="logo-editor">editor</span>
+        </div>
+        <div class="header-meta">
+          <a
+            href="https://placidocordeiro.github.io/MACROPLAY/"
+            target="_blank"
+            class="documentation-link"
+            >⌗ Documentation</a
+          >
+        </div>
+      </header>
+
+      <!-- Load section -->
+      <div class="load-section" id="loadSection">
+        <div class="load-icon">⌗</div>
+        <div class="load-title">Selecione a pasta da placa</div>
+        <div class="load-sub">
+          Abra a pasta raiz do drive <strong>CIRCUITPY</strong><br />
+          para carregar e editar suas macros
+        </div>
+        <button class="btn" id="mainBtn">Abrir pasta</button>
+      </div>
+
+      <!-- Editor -->
+      <div class="editor" id="editor">
+        <div class="profile-tabs" id="profileTabs"></div>
+        <div id="macroContent"></div>
+        <div class="actions">
+          <div class="actions-left">
+            <div
+              class="unsaved"
+              id="unsavedDot"
+              title="Alterações não salvas"
+            ></div>
+            <span id="unsavedLabel" class="unsaved-label"
+              >alterações não salvas</span
+            >
+          </div>
+          <div class="actions-right">
+            <button class="btn secondary" onclick="forgetFolder()">
+              ⇆ change directory
+            </button>
+            <button class="btn secondary" onclick="reloadAllProfile()">
+              <span class="btn-icon-label">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+                  ></path>
+                  <path d="M3 21v-5h5"></path>
+                  <path
+                    d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+                  ></path>
+                  <path d="M21 3v5h-5"></path>
+                </svg>
+                Reload all
+              </span>
+            </button>
+            <button class="btn" onclick="saveAll()">✓ Save all</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/mode/overlay.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/display/placeholder.min.js"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script>
+      // =====================================================================
+      // Config
+      // =====================================================================
+      const PROFILES = ["A", "B", "C", "D"];
+      const FN_KEYS = ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"];
+      const KEY_EVENTS = ["onPress", "onRelease"];
+
+      const PROFILE_EVENTS = ["onBegin", "onEnd", "onPress", "onRelease"];
+      const PROFILE_LABELS = {
+        onBegin: "Ao ativar perfil",
+        onEnd: "Ao desativar perfil",
+        onPress: "PROFILE SWITCH — Press",
+        onRelease: "PROFILE SWITCH — Release",
+      };
+
+      const ENCODER_EVENTS = [
+        "onPress",
+        "onRelease",
+        "onRotateLeft",
+        "onRotateRight",
+      ];
+      const ENCODER_LABELS = {
+        onPress: "Press",
+        onRelease: "Release",
+        onRotateLeft: "Girar Esquerda",
+        onRotateRight: "Girar Direita",
+      };
+
+      const IDB_KEY = "macroplay-dir-handle";
+      const UNSUPPORTED = !window.showDirectoryPicker;
+
+      const MACROPLAY_KEYWORDS = [
+        "Keycode",
+        "ConsumerControlCode",
+        "contextLED",
+        "contextSwitch",
+        "LedCode",
+      ];
+      const MACROPLAY_OBJECTS = [
+        "time",
+        "keyboard",
+        "mouse",
+        "layout",
+        "led",
+        "consumer_control",
+      ];
+      const MACROPLAY_FUNCTIONS = [
+        "press",
+        "release",
+        "send",
+        "write",
+        "move",
+        "playTone",
+        "stopTone",
+      ];
+      const MACROPLAY_HINTS = [
+        // { text: "import time", displayText: "import time" },
+        // { text: "import board", displayText: "import board" },
+        // { text: "import digitalio", displayText: "import digitalio" },
+        // {
+        //   text: "from adafruit_hid.keycode import Keycode",
+        //   displayText: "Keycode import",
+        // },
+        // {
+        //   text: "from adafruit_hid.keyboard import keyboard",
+        //   displayText: "keyboard import",
+        // },
+        // {
+        //   text: "from adafruit_hid.mouse import Mouse",
+        //   displayText: "Mouse import",
+        // },
+        // {
+        //   text: "from adafruit_hid.consumer_control import ConsumerControl",
+        //   displayText: "ConsumerControl import",
+        // },
+        { text: "time.sleep(1.0)", displayText: "time.sleep(...)" },
+        { text: 'layout.write("text")', displayText: "layout.write(...)" },
+        {
+          text: "mouse.move(x=0, y=0, wheel=0)",
+          displayText: "mouse.move(...)",
+        },
+        //================= CODE ========================
+        { text: "def macro():\n    pass", displayText: "def macro()" },
+        { text: "if condition:\n    pass", displayText: "if block" },
+        { text: "whie condition:\n    pass", displayText: "if block" },
+        { text: "for item in items:\n    pass", displayText: "for loop" },
+        //================= keyboard ========================
+        {
+          text: "keyboard.press(Keycode.)",
+          displayText: "keyboard: PRESS",
+        },
+        {
+          text: "keyboard.release(Keycode.)",
+          displayText: "keyboard: RELEASE",
+        },
+        {
+          text: "keyboard.release_all()",
+          displayText: "keyboard: RELEASE ALL",
+        },
+        {
+          text: "keyboard.send(Keycode.)",
+          displayText: "keyboard: SEND",
+        },
+        {
+          text: "keyboard.send(Keycode.CONTROL, Keycode.C)",
+          displayText: "keyboard.send(Ctrl+C)",
+        },
+        {
+          text: "keyboard.send(Keycode.CONTROL, Keycode.V)",
+          displayText: "keyboard.send(Ctrl+V)",
+        },
+        //================= CONSUMER CONTROL ========================
+        {
+          text: "consumer_control.send(ConsumerControlCode.BRIGHTNESS_DECREMENT)",
+          displayText: "CONSUMER CONTROL: BRIGHTNESS_DECREMENT",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.BRIGHTNESS_INCREMENT)",
+          displayText: "CONSUMER CONTROL: BRIGHTNESS_INCREMENT",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.EJECT)",
+          displayText: "CONSUMER CONTROL: EJECT",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.FAST_FORWARD)",
+          displayText: "CONSUMER CONTROL: FAST_FORWARD",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.MUTE)",
+          displayText: "CONSUMER CONTROL: MUTE",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.PLAY_PAUSE)",
+          displayText: "CONSUMER CONTROL: PLAY_PAUSE",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.RECORD)",
+          displayText: "CONSUMER CONTROL: RECORD",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.REWIND)",
+          displayText: "CONSUMER CONTROL: REWIND",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.SCAN_NEXT_TRACK)",
+          displayText: "CONSUMER CONTROL: SCAN_NEXT_TRACK",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.SCAN_PREVIOUS_TRACK)",
+          displayText: "CONSUMER CONTROL: SCAN_PREVIOUS_TRACK",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.STOP)",
+          displayText: "CONSUMER CONTROL: STOP",
+        },
+
+        {
+          text: "consumer_control.send(ConsumerControlCode.VOLUME_DECREMENT)",
+          displayText: "CONSUMER CONTROL: VOLUME_DECREMENT",
+        },
+        {
+          text: "consumer_control.send(ConsumerControlCode.VOLUME_INCREMENT)",
+          displayText: "CONSUMER CONTROL: VOLUME_INCREMENT",
+        },
+      ];
+
+      let dirHandle = null;
+      let currentProfile = "A";
+      // data[profile][key][event] = string
+      // e.g. data['A']['F1']['onPress'] = '...'
+      // encoder: data[profile]['ENCODER'][event] = string
+      // profile lifecycle: data[profile]['PROFILE'][event] = string
+      let data = {};
+      let dirty = false;
+      let modifiedFiles = new Set();
+
+      // =====================================================================
+      // IndexedDB — persist dirHandle
+      // =====================================================================
+      function openIDB() {
+        return new Promise((res, rej) => {
+          const req = indexedDB.open("macroplay", 1);
+          req.onupgradeneeded = (e) =>
+            e.target.result.createObjectStore("handles");
+          req.onsuccess = (e) => res(e.target.result);
+          req.onerror = () => rej();
+        });
+      }
+
+      async function saveHandle(handle) {
+        try {
+          const db = await openIDB();
+          const tx = db.transaction("handles", "readwrite");
+          tx.objectStore("handles").put(handle, IDB_KEY);
+        } catch {}
+      }
+
+      async function loadHandle() {
+        try {
+          const db = await openIDB();
+          return new Promise((res) => {
+            const tx = db.transaction("handles", "readonly");
+            const req = tx.objectStore("handles").get(IDB_KEY);
+            req.onsuccess = () => res(req.result || null);
+            req.onerror = () => res(null);
+          });
+        } catch {
+          return null;
+        }
+      }
+
+      // =====================================================================
+      // Init
+      // =====================================================================
+      window.addEventListener("load", async () => {
+        const btn = document.getElementById("mainBtn");
+
+        if (UNSUPPORTED) {
+          document.querySelector(".load-sub").innerHTML =
+            "⚠️ Use <strong>Use um navegador baseado em Chromium (Chrome, Edge, Brave, Opera ou Vivaldi)</strong> para usar o MACROPLAY editor.<br>Firefox não suporta escrita de arquivos locais.";
+          btn.disabled = true;
+          btn.style.opacity = "0.4";
+          return;
+        }
+
+        btn.onclick = () => openFolder();
+        document.getElementById("loadSection").onclick = (e) => {
+          if (e.target === btn) return;
+          openFolder();
+        };
+
+        const saved = await loadHandle();
+        if (!saved) return;
+
+        const perm = await saved.queryPermission({ mode: "readwrite" });
+        if (perm === "granted") {
+          dirHandle = saved;
+          await loadAllData();
+        } else {
+          document.querySelector(".load-title").textContent =
+            "Reconectar à placa";
+          document.querySelector(".load-sub").innerHTML =
+            "Uma pasta foi usada anteriormente.<br>Clique para reconectar.";
+          btn.textContent = "Reconectar";
+          btn.onclick = async (e) => {
+            e.stopPropagation();
+            try {
+              await saved.requestPermission({ mode: "readwrite" });
+              dirHandle = saved;
+              await loadAllData();
+            } catch {
+              await openFolder();
+            }
+          };
+
+          const extra = document.createElement("button");
+          extra.className = "btn secondary";
+          extra.textContent = "Escolher outra pasta";
+          extra.style.marginTop = "4px";
+          extra.onclick = (e) => {
+            e.stopPropagation();
+            openFolder();
+          };
+          document.getElementById("loadSection").appendChild(extra);
+        }
+      });
+
+      // =====================================================================
+      // File System
+      // =====================================================================
+      async function openFolder() {
+        try {
+          dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+          await saveHandle(dirHandle);
+          await loadAllData();
+        } catch (e) {
+          if (e.name !== "AbortError")
+            showToast("Erro ao abrir pasta", "error");
+        }
+      }
+
+      async function readTxt(folderHandle, filename) {
+        try {
+          const fh = await folderHandle.getFileHandle(filename, {
+            create: true,
+          });
+          const file = await fh.getFile();
+          return await file.text();
+        } catch {
+          return "";
+        }
+      }
+
+      async function writeTxt(folderHandle, filename, content) {
+        const fh = await folderHandle.getFileHandle(filename, { create: true });
+        const writable = await fh.createWritable();
+        await writable.write(content);
+        await writable.close();
+      }
+
+      async function getMacroSectionHandle(profile, section) {
+        const macrosHandle = await dirHandle.getDirectoryHandle("MACROS", {
+          create: true,
+        });
+        const profileHandle = await macrosHandle.getDirectoryHandle(profile, {
+          create: true,
+        });
+
+        if (section === "PROFILE") {
+          return profileHandle.getDirectoryHandle("PROFILE ACTIONS", {
+            create: true,
+          });
+        }
+
+        if (section === "ENCODER") {
+          return profileHandle.getDirectoryHandle("ROTARY ENCODER", {
+            create: true,
+          });
+        }
+
+        return profileHandle.getDirectoryHandle(section, { create: true });
+      }
+
+      async function loadAllData() {
+        data = {};
+        modifiedFiles.clear();
+        refreshDirtyState();
+        try {
+          let macrosHandle;
+          try {
+            macrosHandle = await dirHandle.getDirectoryHandle("MACROS", {
+              create: true,
+            });
+          } catch {
+            showToast(
+              "Pasta MACROS não encontrada — selecione a raiz do CIRCUITPY",
+              "error",
+            );
+            return;
+          }
+
+          for (const profile of PROFILES) {
+            data[profile] = { PROFILE: {}, ENCODER: {} };
+            for (const key of FN_KEYS)
+              data[profile][key] = { onPress: "", onRelease: "" };
+
+            let profileHandle;
+            try {
+              profileHandle = await macrosHandle.getDirectoryHandle(profile, {
+                create: true,
+              });
+            } catch {
+              continue;
+            }
+
+            // F1–F8: each is a subfolder with onPress.txt / onRelease.txt
+            for (const key of FN_KEYS) {
+              data[profile][key] = {};
+              let keyHandle;
+              try {
+                keyHandle = await profileHandle.getDirectoryHandle(key, {
+                  create: true,
+                });
+              } catch {
+                for (const ev of KEY_EVENTS) data[profile][key][ev] = "";
+                continue;
+              }
+              for (const ev of KEY_EVENTS) {
+                data[profile][key][ev] = await readTxt(keyHandle, `${ev}.txt`);
+              }
+            }
+
+            // PROFILE ACTIONS subfolder: onBegin, onEnd, onPress, onRelease
+            let pHandle;
+            try {
+              pHandle = await profileHandle.getDirectoryHandle(
+                "PROFILE ACTIONS",
+                { create: true },
+              );
+            } catch {
+              for (const ev of PROFILE_EVENTS)
+                data[profile]["PROFILE"][ev] = "";
+              pHandle = null;
+            }
+            if (pHandle) {
+              for (const ev of PROFILE_EVENTS) {
+                data[profile]["PROFILE"][ev] = await readTxt(
+                  pHandle,
+                  `${ev}.txt`,
+                );
+              }
+            }
+
+            // ROTARY ENCODER subfolder
+            let eHandle;
+            try {
+              eHandle = await profileHandle.getDirectoryHandle(
+                "ROTARY ENCODER",
+                { create: true },
+              );
+            } catch {
+              for (const ev of ENCODER_EVENTS)
+                data[profile]["ENCODER"][ev] = "";
+              eHandle = null;
+            }
+            if (eHandle) {
+              for (const ev of ENCODER_EVENTS) {
+                data[profile]["ENCODER"][ev] = await readTxt(
+                  eHandle,
+                  `${ev}.txt`,
+                );
+              }
+            }
+          }
+
+          showEditor();
+          showToast("Macros carregados", "success");
+        } catch (e) {
+          showToast("Erro ao ler arquivos: " + e.message, "error");
+        }
+      }
+
+      async function reloadAllProfile() {
+        if (!dirHandle) {
+          showToast("Nenhuma pasta aberta", "error");
+          return;
+        }
+        if (
+          dirty &&
+          !confirm(
+            "Existem alterações não salvas.\nDeseja descartá-las e recarregar os arquivos?",
+          )
+        ) {
+          return;
+        }
+        try {
+          await loadAllData();
+          showToast("Perfis recarregados", "success");
+        } catch (e) {
+          showToast("Erro ao recarregar: " + e.message, "error");
+        }
+      }
+
+      async function saveAll() {
+        if (!dirHandle) {
+          showToast("Abra a pasta primeiro", "error");
+          return;
+        }
+
+        collectCurrentProfile();
+
+        try {
+          const tasks = [];
+
+          for (const fileId of modifiedFiles) {
+            const [profile, section, event] = fileId.split("/");
+            const sectionHandle = await getMacroSectionHandle(profile, section);
+
+            tasks.push(
+              writeTxt(
+                sectionHandle,
+                `${event}.txt`,
+                data[profile][section][event] || "",
+              ),
+            );
+          }
+
+          if (modifiedFiles.size === 0) {
+            showToast("Nada para salvar");
+            return;
+          }
+
+          const results = await Promise.allSettled(tasks);
+          const failed = results.filter((r) => r.status === "rejected");
+
+          if (failed.length) {
+            showToast(
+              `${failed.length} arquivo(s) falharam ao salvar`,
+              "error",
+            );
+            return;
+          }
+
+          modifiedFiles.clear();
+          refreshDirtyState();
+          showToast("Salvo com sucesso", "success");
+        } catch (e) {
+          showToast("Erro ao salvar: " + e.message, "error");
+        }
+      }
+
+      async function saveFile(fileId) {
+        if (!dirHandle) {
+          showToast("Abra a pasta primeiro", "error");
+          return;
+        }
+
+        collectCurrentProfile();
+
+        const [profile, section, event] = fileId.split("/");
+        try {
+          const sectionHandle = await getMacroSectionHandle(profile, section);
+          await writeTxt(
+            sectionHandle,
+            `${event}.txt`,
+            data[profile]?.[section]?.[event] || "",
+          );
+          modifiedFiles.delete(fileId);
+          refreshDirtyState();
+          showToast("Codigo salvo", "success");
+        } catch (e) {
+          showToast("Erro ao salvar codigo: " + e.message, "error");
+        }
+      }
+
+      async function reloadFile(fileId) {
+        if (!dirHandle) {
+          showToast("Abra a pasta primeiro", "error");
+          return;
+        }
+
+        const [profile, section, event] = fileId.split("/");
+        try {
+          const sectionHandle = await getMacroSectionHandle(profile, section);
+          const value = await readTxt(sectionHandle, `${event}.txt`);
+          if (!data[profile]) data[profile] = {};
+          if (!data[profile][section]) data[profile][section] = {};
+          data[profile][section][event] = value;
+
+          const ta = getTextareaByFileId(fileId);
+          if (ta) setTextareaValue(ta, value, { silent: true });
+
+          modifiedFiles.delete(fileId);
+          refreshDirtyState();
+          showToast("Codigo recarregado", "success");
+        } catch (e) {
+          showToast("Erro ao recarregar codigo: " + e.message, "error");
+        }
+      }
+
+      // =====================================================================
+      // UI — render
+      // =====================================================================
+      function showEditor() {
+        document.getElementById("loadSection").classList.add("hidden");
+        document.getElementById("editor").classList.add("visible");
+        renderTabs();
+        renderProfile(currentProfile);
+      }
+
+      function renderTabs() {
+        const tabs = document.getElementById("profileTabs");
+        tabs.innerHTML = "";
+        for (const p of PROFILES) {
+          const btn = document.createElement("button");
+          btn.className = "tab" + (p === currentProfile ? " active" : "");
+          btn.textContent = `PROFILE ${p}`;
+          btn.onclick = () => switchProfile(p);
+          tabs.appendChild(btn);
+        }
+      }
+
+      function switchProfile(p) {
+        if (p === currentProfile) return;
+        collectCurrentProfile();
+        currentProfile = p;
+        renderTabs();
+        renderProfile(p);
+      }
+
+      // Active sub-tab state per card
+      const activeSubTab = {};
+      const activeProfileLifecycleTab = {};
+      const activeProfileButtonTab = {};
+      const activeEncoderButtonTab = {};
+      const activeEncoderRotationTab = {};
+      const codeEditors = new Map();
+      const lockedFiles = new Set();
+      let privateClipboard = "";
+      let hasPrivateClipboard = false;
+
+      function defineMacroPlayMode() {
+        if (!window.CodeMirror || CodeMirror.modes["macroplay-python"]) return;
+
+        const groups = [
+          { words: MACROPLAY_KEYWORDS, token: "macroplay-keyword" },
+          { words: MACROPLAY_OBJECTS, token: "macroplay-object" },
+          { words: MACROPLAY_FUNCTIONS, token: "macroplay-function" },
+        ].map((group) => ({
+          ...group,
+          words: new Set(group.words),
+        }));
+
+        CodeMirror.defineMode("macroplay-python", (config) => {
+          const pythonMode = CodeMirror.getMode(config, "python");
+          const overlay = {
+            token(stream) {
+              const commentStart = stream.string.indexOf("#");
+              if (commentStart !== -1 && stream.pos >= commentStart) {
+                stream.skipToEnd();
+                return null;
+              }
+
+              if (stream.match(/^[A-Za-z_][\w_]*/)) {
+                const current = stream.current();
+                const group = groups.find((item) => item.words.has(current));
+                return group ? group.token : null;
+              }
+
+              stream.next();
+              return null;
+            },
+          };
+
+          return CodeMirror.overlayMode(pythonMode, overlay);
+        });
+      }
+
+      function makeTextarea(id, cls, placeholder, value, inputHandler) {
+        const ta = document.createElement("textarea");
+        ta.className = cls;
+        ta.id = id;
+        ta.placeholder = placeholder;
+        ta.value = value; // safe — never goes through innerHTML
+        ta.wrap = "off";
+        ta.dataset.editorClass = cls;
+        ta.dataset.fileId = getFileIdFromTextareaId(id);
+        ta.addEventListener("input", function () {
+          if (this.readOnly) return;
+          inputHandler(this);
+        });
+        ta.addEventListener("keydown", function (e) {
+          if (this.readOnly) return;
+          if (e.key === "Tab" && !e.shiftKey) {
+            e.preventDefault();
+            this.setRangeText(
+              "    ",
+              this.selectionStart,
+              this.selectionEnd,
+              "end",
+            );
+            this.dispatchEvent(new Event("input"));
+          } else if (e.key === "Tab" && e.shiftKey) {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const lineStart = this.value.lastIndexOf("\n", start - 1) + 1;
+            const beforeCursor = this.value.substring(lineStart, start);
+            let removeCount = 0;
+            if (beforeCursor.startsWith("    ")) {
+              removeCount = 4;
+            } else {
+              while (
+                removeCount < beforeCursor.length &&
+                beforeCursor[removeCount] === " "
+              ) {
+                removeCount++;
+              }
+            }
+            if (removeCount > 0) {
+              this.setRangeText(
+                "",
+                lineStart,
+                lineStart + removeCount,
+                "preserve",
+              );
+              this.selectionStart = this.selectionEnd = Math.max(
+                lineStart,
+                start - removeCount,
+              );
+              this.dispatchEvent(new Event("input"));
+            }
+          }
+        });
+        requestAnimationFrame(() => enhanceTextarea(ta, inputHandler));
+        return ta;
+      }
+
+      function enhanceTextarea(ta, inputHandler) {
+        if (!ta.isConnected || codeEditors.has(ta.id) || !window.CodeMirror) {
+          return;
+        }
+
+        defineMacroPlayMode();
+        const shouldShowEditor = ta.style.display !== "none";
+        const cm = CodeMirror.fromTextArea(ta, {
+          mode: "macroplay-python",
+          theme: "material-darker",
+          lineNumbers: true,
+          lineWrapping: false,
+          indentUnit: 4,
+          tabSize: 4,
+          indentWithTabs: false,
+          smartIndent: true,
+          autoCloseBrackets: true,
+          matchBrackets: true,
+          viewportMargin: Infinity,
+          placeholder: ta.placeholder,
+          hintOptions: {
+            hint: macroPlayHint,
+            completeSingle: false,
+          },
+          extraKeys: {
+            Tab(editor) {
+              if (editor.somethingSelected()) {
+                editor.indentSelection("add");
+              } else {
+                editor.replaceSelection("    ", "end");
+              }
+            },
+            "Shift-Tab": (editor) => editor.indentSelection("subtract"),
+            "Ctrl-Space": "autocomplete",
+            "Ctrl-;": toggleEditorComment,
+            "Cmd-;": toggleEditorComment,
+            "Ctrl-D": duplicateEditorLine,
+            "Cmd-D": duplicateEditorLine,
+          },
+        });
+
+        const wrapper = cm.getWrapperElement();
+        wrapper.classList.add("code-editor");
+        wrapper.style.display = shouldShowEditor ? "" : "none";
+
+        cm._macroplayChangeHandler = () => {
+          cm.save();
+          inputHandler(ta);
+          updateCardActions(wrapper.closest(".code-card"));
+        };
+        cm.on("change", cm._macroplayChangeHandler);
+        cm.on("keydown", handleCodeMirrorKeydown);
+
+        codeEditors.set(ta.id, cm);
+        applyEditorLock(ta);
+        updateCardActions(wrapper.closest(".code-card"));
+        refreshCodeEditorLayout(cm);
+      }
+
+      function syncCodeEditors() {
+        codeEditors.forEach((cm) => cm.save());
+      }
+
+      function resetCodeEditors() {
+        codeEditors.forEach((cm) => cm.toTextArea());
+        codeEditors.clear();
+      }
+
+      function refreshCodeEditorLayout(cm) {
+        if (!cm) return;
+        requestAnimationFrame(() => {
+          cm.refresh();
+          setTimeout(() => cm.refresh(), 0);
+        });
+      }
+
+      function refreshAllCodeEditorLayouts() {
+        codeEditors.forEach(refreshCodeEditorLayout);
+        if (document.fonts?.ready) {
+          document.fonts.ready.then(() => {
+            codeEditors.forEach(refreshCodeEditorLayout);
+          });
+        }
+      }
+
+      function setCodeEditorVisible(id, visible) {
+        const ta = document.getElementById(id);
+        const cm = codeEditors.get(id);
+        if (cm) {
+          if (ta) ta.style.display = "none";
+          const wrapper = cm.getWrapperElement();
+          wrapper.style.display = visible ? "" : "none";
+          if (visible) refreshCodeEditorLayout(cm);
+        } else if (ta) {
+          ta.style.display = visible ? "" : "none";
+        }
+        updateCardActions(ta?.closest(".code-card"));
+      }
+
+      function getFileIdFromTextareaId(id) {
+        const parts = id.replace(/^ta-/, "").split("-");
+        const profile = parts[0];
+        const section = parts[1];
+        const event = parts[parts.length - 1];
+        return `${profile}/${section}/${event}`;
+      }
+
+      function getTextareaByFileId(fileId) {
+        return (
+          [...document.querySelectorAll("textarea")].find(
+            (ta) => ta.dataset.fileId === fileId,
+          ) || null
+        );
+      }
+
+      function getCardFileId(profile, section, event) {
+        return `${profile}/${section}/${event}`;
+      }
+
+      function getFocusedCodeTextarea() {
+        for (const [id, cm] of codeEditors) {
+          if (cm.hasFocus?.()) return document.getElementById(id);
+        }
+
+        const active = document.activeElement;
+        if (active?.matches?.("textarea[data-file-id]")) return active;
+        return null;
+      }
+
+      function macroPlayHint(editor) {
+        const cursor = editor.getCursor();
+        const token = editor.getTokenAt(cursor);
+        const tokenStart = /^[\w.]+$/.test(token.string)
+          ? token.start
+          : cursor.ch;
+        const current = editor
+          .getRange({ line: cursor.line, ch: tokenStart }, cursor)
+          .toLowerCase();
+        const list = MACROPLAY_HINTS.filter((hint) => {
+          const haystack = `${hint.displayText} ${hint.text}`.toLowerCase();
+          return !current || haystack.includes(current);
+        });
+
+        return {
+          list: list.length ? list : MACROPLAY_HINTS,
+          from: CodeMirror.Pos(cursor.line, tokenStart),
+          to: cursor,
+        };
+      }
+
+      function toggleEditorComment(editor) {
+        if (editor.toggleComment) {
+          editor.toggleComment({ lineComment: "#" });
+        }
+      }
+
+      function handleCodeMirrorKeydown(editor, event) {
+        const isCommand = event.ctrlKey || event.metaKey;
+        const isSemicolon =
+          event.key === ";" ||
+          event.code === "Semicolon" ||
+          event.key === "Semicolon";
+
+        if (isCommand && isSemicolon) {
+          event.preventDefault();
+          event.stopPropagation();
+          toggleEditorComment(editor);
+        }
+      }
+
+      function duplicateEditorLine(editor) {
+        const doc = editor.getDoc();
+        const cursor = doc.getCursor();
+        const line = doc.getLine(cursor.line) || "";
+        doc.replaceRange(`\n${line}`, {
+          line: cursor.line,
+          ch: line.length,
+        });
+        doc.setCursor({ line: cursor.line + 1, ch: cursor.ch });
+      }
+
+      const ICONS = {
+        reload: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M3 21v-5h5"></path>
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+          </svg>
+        `,
+        save: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+            <path d="M17 21v-8H7v8"></path>
+            <path d="M7 3v5h8"></path>
+          </svg>
+        `,
+        copy: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        `,
+        paste: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1"></rect>
+            <path d="M9 14h6"></path>
+            <path d="M12 11v6"></path>
+          </svg>
+        `,
+        trash: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18"></path>
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+          </svg>
+        `,
+        lockOpen: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+          </svg>
+        `,
+        lockClosed: `
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        `,
+      };
+
+      function makeCodeActions() {
+        const actions = document.createElement("div");
+        actions.className = "code-card-actions";
+        actions.appendChild(makeSaveButton());
+        actions.appendChild(makeReloadButton());
+        actions.appendChild(makeCopyButton());
+        actions.appendChild(makePasteButton());
+        actions.appendChild(makeClearButton());
+        actions.appendChild(makeLockButton());
+        return actions;
+      }
+
+      function makeActionButton({
+        action,
+        title,
+        icon,
+        danger = false,
+        disabled = false,
+        handler,
+      }) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "code-action-btn" + (danger ? " danger" : "");
+        btn.dataset.action = action;
+        btn.disabled = disabled;
+        btn.title = title;
+        btn.setAttribute("aria-label", title);
+        btn.innerHTML = icon;
+        btn.addEventListener("click", handler);
+        return btn;
+      }
+
+      function makeReloadButton() {
+        return makeActionButton({
+          action: "reload",
+          title: "Reload",
+          icon: ICONS.reload,
+          handler: reloadActiveCardCode,
+        });
+      }
+
+      function makeSaveButton() {
+        return makeActionButton({
+          action: "save",
+          title: "Save",
+          icon: ICONS.save,
+          disabled: true,
+          handler: saveActiveCardCode,
+        });
+      }
+
+      function makeCopyButton() {
+        return makeActionButton({
+          action: "copy",
+          title: "Copy",
+          icon: ICONS.copy,
+          handler: copyActiveCardCode,
+        });
+      }
+
+      function makePasteButton() {
+        return makeActionButton({
+          action: "paste",
+          title: "Paste",
+          icon: ICONS.paste,
+          handler: pasteActiveCardCode,
+        });
+      }
+
+      function makeClearButton() {
+        return makeActionButton({
+          action: "clear",
+          title: "Delete",
+          icon: ICONS.trash,
+          danger: true,
+          handler: clearActiveCardCode,
+        });
+      }
+
+      function makeLockButton() {
+        return makeActionButton({
+          action: "lock",
+          title: "Block",
+          icon: ICONS.lockOpen,
+          handler: toggleActiveCardLock,
+        });
+      }
+
+      async function reloadActiveCardCode(e) {
+        const card = e.currentTarget.closest(".code-card");
+        const ta = getActiveCardTextarea(card);
+        if (!ta) {
+          showToast("Nenhum editor ativo para recarregar", "error");
+          return;
+        }
+        await reloadFile(ta.dataset.fileId);
+      }
+
+      async function saveActiveCardCode(e) {
+        const card = e.currentTarget.closest(".code-card");
+        const ta = getActiveCardTextarea(card);
+        if (!ta) {
+          showToast("Nenhum editor ativo para salvar", "error");
+          return;
+        }
+        await saveFile(ta.dataset.fileId);
+      }
+
+      async function copyActiveCardCode(e) {
+        const card = e.currentTarget.closest(".code-card");
+        const ta = getActiveCardTextarea(card);
+        if (!ta) {
+          showToast("Nenhum editor ativo para copiar", "error");
+          return;
+        }
+
+        copyActiveCodeToClipboards(ta);
+        showToast("Codigo copiado", "success");
+      }
+
+      async function pasteActiveCardCode(e) {
+        const card = e.currentTarget.closest(".code-card");
+        const ta = getActiveCardTextarea(card);
+        if (!ta) {
+          showToast("Nenhum editor ativo para colar", "error");
+          return;
+        }
+        if (isFileLocked(ta.dataset.fileId)) {
+          showToast("Codigo ativo bloqueado", "error");
+          return;
+        }
+
+        if (!hasPrivateClipboard) {
+          showToast("Area privada vazia", "error");
+          return;
+        }
+
+        replaceEditorValue(ta, privateClipboard);
+        showToast("Codigo colado", "success");
+      }
+
+      function clearActiveCardCode(e) {
+        const card = e.currentTarget.closest(".code-card");
+        const ta = getActiveCardTextarea(card);
+        if (!ta) {
+          showToast("Nenhum editor ativo para apagar", "error");
+          return;
+        }
+
+        setTextareaValue(ta, "");
+        updateCardActions(card);
+        showToast("Codigo apagado", "success");
+      }
+
+      function toggleActiveCardLock(e) {
+        const card = e.currentTarget.closest(".code-card");
+        const ta = getActiveCardTextarea(card);
+        if (!ta) {
+          showToast("Nenhum editor ativo para bloquear", "error");
+          return;
+        }
+
+        const fileId = ta.dataset.fileId;
+        if (isFileLocked(fileId)) {
+          lockedFiles.delete(fileId);
+          showToast("Codigo ativo desbloqueado", "success");
+        } else {
+          lockedFiles.add(fileId);
+          showToast("Codigo ativo bloqueado", "success");
+        }
+
+        applyEditorLock(ta);
+        updateCardActions(card);
+      }
+
+      function getActiveCardTextarea(card) {
+        if (!card) return null;
+        if (card.dataset.activeFileId) {
+          const active = [...card.querySelectorAll("textarea")].find(
+            (ta) => ta.dataset.fileId === card.dataset.activeFileId,
+          );
+          if (active) return active;
+        }
+
+        const textareas = [...card.querySelectorAll("textarea")];
+        return (
+          textareas.find((ta) => {
+            const cm = codeEditors.get(ta.id);
+            const wrapper = cm?.getWrapperElement();
+            return wrapper
+              ? wrapper.style.display !== "none"
+              : ta.style.display !== "none";
+          }) || null
+        );
+      }
+
+      async function copyText(text) {
+        if (navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return;
+          } catch (_err) {
+            // file:// can block the async clipboard API in some browsers.
+          }
+        }
+
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+
+      function copyActiveCodeToClipboards(ta) {
+        const cm = codeEditors.get(ta.id);
+        if (cm) cm.save();
+
+        privateClipboard = ta.value || "";
+        hasPrivateClipboard = true;
+        copyText(privateClipboard).catch(() => {
+          // A copia privada continua funcionando mesmo se o navegador bloquear o clipboard do sistema.
+        });
+      }
+
+      function replaceEditorValue(ta, text) {
+        setTextareaValue(ta, text);
+      }
+
+      function setTextareaValue(ta, value, opts = {}) {
+        const cm = codeEditors.get(ta.id);
+        if (cm) {
+          if (opts.silent) cm.off("change", cm._macroplayChangeHandler);
+          cm.setValue(value);
+          cm.save();
+          if (opts.silent) cm.on("change", cm._macroplayChangeHandler);
+          cm.focus();
+          updateCardActions(ta.closest(".code-card"));
+          return;
+        }
+
+        ta.value = value;
+        if (!opts.silent)
+          ta.dispatchEvent(new Event("input", { bubbles: true }));
+        ta.focus();
+        updateCardActions(ta.closest(".code-card"));
+      }
+
+      function isFileLocked(fileId) {
+        return lockedFiles.has(fileId);
+      }
+
+      function applyEditorLock(ta) {
+        if (!ta) return;
+        const locked = isFileLocked(ta.dataset.fileId);
+        ta.readOnly = locked;
+
+        const cm = codeEditors.get(ta.id);
+        if (cm) {
+          cm.setOption("readOnly", locked);
+        }
+      }
+
+      function focusTextareaEditor(ta) {
+        const cm = codeEditors.get(ta.id);
+        if (cm) {
+          cm.focus();
+          return;
+        }
+
+        ta.focus();
+      }
+
+      function updateCardActions(card) {
+        if (!card) return;
+        const ta = getActiveCardTextarea(card);
+        if (!ta) return;
+
+        applyEditorLock(ta);
+
+        const fileId = ta.dataset.fileId;
+        const isDirty = modifiedFiles.has(ta.dataset.fileId);
+        const locked = isFileLocked(fileId);
+
+        card.querySelectorAll(".code-action-btn").forEach((btn) => {
+          const action = btn.dataset.action;
+          if (action === "lock") {
+            btn.disabled = false;
+            btn.classList.toggle("locked", locked);
+            btn.title = locked ? "Active" : "Block";
+            btn.setAttribute("aria-label", locked ? "Active" : "Block");
+            btn.innerHTML = locked ? ICONS.lockClosed : ICONS.lockOpen;
+            return;
+          }
+
+          btn.disabled = locked || (action === "save" && !isDirty);
+        });
+      }
+
+      function makeCodeCard(opts) {
+        const {
+          cardId,
+          cardClass = "",
+          label,
+          section,
+          events,
+          tabLabels,
+          activeTabMap,
+          defaultTab,
+          getValue,
+          getInputHandler,
+          profile,
+        } = opts;
+
+        if (!activeTabMap[cardId]) activeTabMap[cardId] = defaultTab;
+
+        const card = document.createElement("div");
+        card.className = `code-card ${cardClass}`;
+        card.id = `card-${cardId}`;
+        card.dataset.activeFileId = getCardFileId(
+          profile,
+          section,
+          activeTabMap[cardId],
+        );
+
+        // Header
+        const header = document.createElement("div");
+        header.className = "code-card-header";
+        const labelEl = document.createElement("span");
+        labelEl.className = "code-card-label";
+        labelEl.textContent = label;
+        header.appendChild(labelEl);
+        header.appendChild(makeCodeActions());
+        card.appendChild(header);
+
+        // Sub-tabs
+        const tabsEl = document.createElement("div");
+        tabsEl.className = "sub-tabs";
+        events.forEach((ev) => {
+          const btn = document.createElement("button");
+          btn.className =
+            "sub-tab" + (activeTabMap[cardId] === ev ? " active" : "");
+          btn.dataset.fileId = getCardFileId(profile, section, ev);
+          btn.innerHTML = `<span class="sub-tab-label">${tabLabels[ev]}</span><span class="tab-dirty-dot"></span>`;
+          btn.onclick = () => {
+            collectCurrentProfile();
+            switchCardTab(cardId, ev, section, events, activeTabMap);
+          };
+          tabsEl.appendChild(btn);
+        });
+        card.appendChild(tabsEl);
+
+        // Textareas
+        events.forEach((ev) => {
+          const ta = makeTextarea(
+            `ta-${cardId}-${ev}`,
+            "code-textarea",
+            "Adicione seu script aqui:",
+            getValue(ev),
+            getInputHandler(ev),
+          );
+          if (activeTabMap[cardId] !== ev) ta.style.display = "none";
+          card.appendChild(ta);
+        });
+
+        updateCardActions(card);
+        return card;
+      }
+
+      function renderProfile(profile) {
+        resetCodeEditors();
+        const container = document.getElementById("macroContent");
+        container.innerHTML = "";
+        const d = data[profile] || {};
+
+        // ── FUNCTIONS section ──────────────────────────────────
+        const functionTitle = document.createElement("div");
+        functionTitle.className = "section-title";
+        functionTitle.innerHTML = `FUNCTIONS <span class="badge">PROFILE ${profile}</span>`;
+        container.appendChild(functionTitle);
+
+        const fnGrid = document.createElement("div");
+        fnGrid.className = "macro-grid";
+
+        for (const key of FN_KEYS) {
+          const cardId = `${profile}-${key}`;
+          fnGrid.appendChild(
+            makeCodeCard({
+              cardId,
+              cardClass: "macro-card",
+              label: key,
+              section: key,
+              events: KEY_EVENTS,
+              tabLabels: Object.fromEntries(
+                KEY_EVENTS.map((ev) => [ev, formatEvent(ev)]),
+              ),
+              activeTabMap: activeSubTab,
+              defaultTab: "onPress",
+              getValue: (ev) => d[key]?.[ev] || "",
+              getInputHandler: (ev) => (el) => onInput(key, null, ev, el),
+              profile,
+            }),
+          );
+        }
+        container.appendChild(fnGrid);
+
+        // ── PROFILE ACTIONS section ────────────────────────────
+        const profileTitle = document.createElement("div");
+        profileTitle.className = "section-title";
+        profileTitle.innerHTML = `PROFILE ACTIONS <span class="badge">PROFILE ${profile}</span>`;
+        container.appendChild(profileTitle);
+
+        const lifecycleGrid = document.createElement("div");
+        lifecycleGrid.className = "lifecycle-grid";
+
+        lifecycleGrid.appendChild(
+          makeCodeCard({
+            cardId: `${profile}-PROFILE-LIFECYCLE`,
+            cardClass: "profile-card",
+            label: "LIFE CYCLE",
+            section: "PROFILE",
+            events: ["onBegin", "onEnd"],
+            tabLabels: { onBegin: "↪ ON BEGIN", onEnd: "↩ ON END" },
+            activeTabMap: activeProfileLifecycleTab,
+            defaultTab: "onBegin",
+            getValue: (ev) => d.PROFILE?.[ev] || "",
+            getInputHandler: (ev) => (el) => onInput("PROFILE", ev, null, el),
+            profile,
+          }),
+        );
+
+        lifecycleGrid.appendChild(
+          makeCodeCard({
+            cardId: `${profile}-PROFILE-BUTTON`,
+            cardClass: "profile-card",
+            label: "PROFILE SWITCH",
+            section: "PROFILE",
+            events: ["onPress", "onRelease"],
+            tabLabels: { onPress: "▼ ON PRESS", onRelease: "▲ ON RELEASE" },
+            activeTabMap: activeProfileButtonTab,
+            defaultTab: "onPress",
+            getValue: (ev) => d.PROFILE?.[ev] || "",
+            getInputHandler: (ev) => (el) => onInput("PROFILE", ev, null, el),
+            profile,
+          }),
+        );
+
+        container.appendChild(lifecycleGrid);
+
+        // ── ROTARY ENCODER section ─────────────────────────────
+        const encoderTitle = document.createElement("div");
+        encoderTitle.className = "section-title";
+        encoderTitle.innerHTML = `ROTARY ENCODER <span class="badge">PROFILE ${profile}</span>`;
+        container.appendChild(encoderTitle);
+
+        const encoderGrid = document.createElement("div");
+        encoderGrid.className = "encoder-grid";
+
+        encoderGrid.appendChild(
+          makeCodeCard({
+            cardId: `${profile}-ENCODER-ROTATION`,
+            cardClass: "encoder-card",
+            label: "Rotation",
+            section: "ENCODER",
+            events: ["onRotateLeft", "onRotateRight"],
+            tabLabels: {
+              onRotateLeft: "↶ ON ROTATE LEFT",
+              onRotateRight: "↷ ON ROTATE RIGHT",
+            },
+            activeTabMap: activeEncoderRotationTab,
+            defaultTab: "onRotateLeft",
+            getValue: (ev) => d.ENCODER?.[ev] || "",
+            getInputHandler: (ev) => (el) => onInput("ENCODER", ev, null, el),
+            profile,
+          }),
+        );
+
+        encoderGrid.appendChild(
+          makeCodeCard({
+            cardId: `${profile}-ENCODER-BUTTON`,
+            cardClass: "encoder-card",
+            label: "Encoder Button",
+            section: "ENCODER",
+            events: ["onPress", "onRelease"],
+            tabLabels: { onPress: "▼ ON PRESS", onRelease: "▲ ON RELEASE" },
+            activeTabMap: activeEncoderButtonTab,
+            defaultTab: "onPress",
+            getValue: (ev) => d.ENCODER?.[ev] || "",
+            getInputHandler: (ev) => (el) => onInput("ENCODER", ev, null, el),
+            profile,
+          }),
+        );
+
+        container.appendChild(encoderGrid);
+        updateModifiedIndicators();
+        refreshAllCodeEditorLayouts();
+      }
+
+      function switchCardTab(cardId, ev, section, events, activeTabMap) {
+        activeTabMap[cardId] = ev;
+        const card = document.getElementById(`card-${cardId}`);
+        if (card) {
+          card.dataset.activeFileId = getCardFileId(
+            currentProfile,
+            section,
+            ev,
+          );
+        }
+
+        events.forEach((eventName, index) => {
+          const btn = document.querySelector(
+            `#card-${cardId} .sub-tab:nth-child(${index + 1})`,
+          );
+          if (btn) btn.classList.toggle("active", eventName === ev);
+        });
+
+        events.forEach((eventName) => {
+          setCodeEditorVisible(`ta-${cardId}-${eventName}`, eventName === ev);
+        });
+        updateCardActions(card);
+      }
+
+      // key: 'F1'–'F8' | 'PROFILE' | 'ENCODER'
+      // subKey: event inside PROFILE or ENCODER (e.g. 'onBegin')
+      // ev: event inside FN key (e.g. 'onPress')
+      function onInput(key, subKey, ev, el) {
+        const profile = currentProfile;
+        if (!data[profile]) data[profile] = {};
+
+        if (key === "PROFILE" || key === "ENCODER") {
+          if (!data[profile][key]) data[profile][key] = {};
+          data[profile][key][subKey] = el.value;
+          modifiedFiles.add(el.dataset.fileId || `${profile}/${key}/${subKey}`);
+        } else {
+          if (!data[profile][key]) data[profile][key] = {};
+          data[profile][key][ev] = el.value;
+          modifiedFiles.add(el.dataset.fileId || `${profile}/${key}/${ev}`);
+        }
+
+        refreshDirtyState();
+      }
+
+      function collectCurrentProfile() {
+        syncCodeEditors();
+        const profile = currentProfile;
+        if (!data[profile]) data[profile] = {};
+        if (!data[profile]["PROFILE"]) data[profile]["PROFILE"] = {};
+        if (!data[profile]["ENCODER"]) data[profile]["ENCODER"] = {};
+
+        // FN keys
+        for (const key of FN_KEYS) {
+          if (!data[profile][key]) data[profile][key] = {};
+          const cardId = `${profile}-${key}`;
+          for (const ev of KEY_EVENTS) {
+            const el = document.getElementById(`ta-${cardId}-${ev}`);
+            if (el) data[profile][key][ev] = el.value;
+          }
+        }
+
+        // PROFILE events
+        for (const ev of PROFILE_EVENTS) {
+          const el = document.getElementById(
+            `ta-${profile}-PROFILE-${
+              ["onBegin", "onEnd"].includes(ev) ? "LIFECYCLE" : "BUTTON"
+            }-${ev}`,
+          );
+          if (el) data[profile]["PROFILE"][ev] = el.value;
+        }
+
+        // ENCODER events
+        const encoderGroups = {
+          BUTTON: ["onPress", "onRelease"],
+          ROTATION: ["onRotateLeft", "onRotateRight"],
+        };
+        for (const [group, events] of Object.entries(encoderGroups)) {
+          for (const ev of events) {
+            const el = document.getElementById(
+              `ta-${profile}-ENCODER-${group}-${ev}`,
+            );
+            if (el) data[profile]["ENCODER"][ev] = el.value;
+          }
+        }
+      }
+
+      // =====================================================================
+      // Helpers
+      // =====================================================================
+      function setDirty(val) {
+        dirty = val;
+        document.getElementById("unsavedDot").classList.toggle("visible", val);
+        document.getElementById("unsavedLabel").style.display = val
+          ? "block"
+          : "none";
+      }
+
+      function refreshDirtyState() {
+        setDirty(modifiedFiles.size > 0);
+        updateModifiedIndicators();
+        document.querySelectorAll(".code-card").forEach(updateCardActions);
+      }
+
+      function updateModifiedIndicators() {
+        document.querySelectorAll(".sub-tab[data-file-id]").forEach((btn) => {
+          btn.classList.toggle("dirty", modifiedFiles.has(btn.dataset.fileId));
+        });
+      }
+
+      function formatEvent(ev) {
+        return { onPress: "▼ on press", onRelease: "▲ on release" }[ev] || ev;
+      }
+
+      function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove("show"), 2800);
+      }
+
+      window.addEventListener("beforeunload", (e) => {
+        if (dirty) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      });
+
+      document.addEventListener("keydown", async (e) => {
+        if (e.repeat) return;
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          const focusedTextarea = getFocusedCodeTextarea();
+          if (focusedTextarea) {
+            const fileId = focusedTextarea.dataset.fileId;
+            if (modifiedFiles.has(fileId)) {
+              await saveFile(fileId);
+            } else {
+              showToast("Codigo ativo ja esta salvo", "success");
+            }
+            return;
+          }
+          await saveAll();
+        }
+      });
+
+      window.forgetFolder = async function () {
+        const db = await openIDB();
+        const tx = db.transaction("handles", "readwrite");
+        tx.objectStore("handles").delete(IDB_KEY);
+        tx.oncomplete = () => location.reload();
+      };
+    </script>
+  </body>
+</html>

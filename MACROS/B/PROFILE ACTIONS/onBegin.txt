@@ -1,0 +1,5 @@
+led.fill((0,10, 0))
+led[LedCode["A"]] = (0, 0, 0)
+led[LedCode["B"]] = (0, 255, 0) 
+led[LedCode["C"]] = (0, 0, 0)
+led[LedCode["D"]] = (0, 0, 0)

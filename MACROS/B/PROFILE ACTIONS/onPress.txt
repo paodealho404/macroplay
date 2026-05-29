@@ -1,0 +1,8 @@
+led[contextLED] = (0,255, 0)
+playTone(523)
+time.sleep(0.05)
+playTone(659)
+time.sleep(0.05)
+playTone(784)
+time.sleep(0.05)
+stopTone()

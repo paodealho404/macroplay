@@ -1,0 +1,3 @@
+globalVars["channel"] = not globalVars["channel"]
+
+globalVars["buttonPressed"] = time.time()

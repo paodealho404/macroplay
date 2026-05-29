@@ -1,0 +1,1 @@
+consumer_control.send(ConsumerControlCode.VOLUME_DECREMENT)

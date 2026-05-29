@@ -1,0 +1,17 @@
+if (  time.time() - globalVars["buttonPressed"] ) >= 0.2:
+
+    if globalVars["ledActive"] == True:
+        for idx in range(0, 12):
+            globalVars["ledState"].append(led[idx])
+            led[idx] = (0,0,0)
+    else:
+        for idx in range(0, 12):
+            led[idx] = globalVars["ledState"][idx] 
+        
+        globalVars["ledState"].clear()
+
+            
+    globalVars["ledActive"] = not globalVars["ledActive"]
+
+globalVars["buttonPressed"] = 0
+        
